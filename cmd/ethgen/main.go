@@ -6,10 +6,10 @@ import (
 	"os"
 	"time"
 
+	"github.com/urfave/cli/v2"
 	"github.com/wcgcyx/ethgen/api"
 	"github.com/wcgcyx/ethgen/node"
 	"github.com/wcgcyx/ethgen/request"
-	"github.com/urfave/cli/v2"
 )
 
 type config struct {
@@ -29,16 +29,6 @@ func main() {
 						Name:  "window",
 						Value: 2880,
 						Usage: "specify window size",
-					},
-					&cli.IntFlag{
-						Name:  "token_weight",
-						Value: 85,
-						Usage: "specify token weight",
-					},
-					&cli.IntFlag{
-						Name:  "tx_weight",
-						Value: 15,
-						Usage: "specify tx weight",
 					},
 					&cli.StringFlag{
 						Name:  "config",
@@ -67,7 +57,7 @@ func main() {
 					if err != nil {
 						return err
 					}
-					n, err := node.NewNode(uint(c.Int("window")), c.String("chain_ap"), cfg.ERC20, cfg.ERC721, uint(c.Int("token_weight")), uint(c.Int("tx_weight")))
+					n, err := node.NewNode(uint(c.Int("window")), c.String("chain_ap"), cfg.ERC20, cfg.ERC721)
 					if err != nil {
 						return err
 					}
@@ -98,6 +88,16 @@ func main() {
 						Value: 0,
 						Usage: "specify frequency",
 					},
+					&cli.IntFlag{
+						Name:  "token_weight",
+						Value: 85,
+						Usage: "specify token weight",
+					},
+					&cli.IntFlag{
+						Name:  "tx_weight",
+						Value: 15,
+						Usage: "specify tx weight",
+					},
 				},
 				Action: func(c *cli.Context) error {
 					// First try to get client
@@ -114,7 +114,7 @@ func main() {
 					// Generate queries
 					duration := c.Duration("duration")
 					for {
-						queries, err := client.Generate(uint(c.Int("number")))
+						queries, err := client.Generate(uint(c.Int("number")), uint(c.Int("token_weight")), uint(c.Int("tx_weight")))
 						if err != nil {
 							return err
 						}
@@ -157,6 +157,16 @@ func main() {
 						Value: "http://127.0.0.1:8545",
 						Usage: "specify chain access addr",
 					},
+					&cli.IntFlag{
+						Name:  "token_weight",
+						Value: 85,
+						Usage: "specify token weight",
+					},
+					&cli.IntFlag{
+						Name:  "tx_weight",
+						Value: 15,
+						Usage: "specify tx weight",
+					},
 				},
 				Action: func(c *cli.Context) error {
 					// First try to get client
@@ -173,7 +183,7 @@ func main() {
 					// Generate queries
 					duration := c.Duration("duration")
 					for {
-						queries, err := client.Generate(uint(c.Int("number")))
+						queries, err := client.Generate(uint(c.Int("number")), uint(c.Int("token_weight")), uint(c.Int("tx_weight")))
 						if err != nil {
 							return err
 						}

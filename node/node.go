@@ -7,19 +7,17 @@ import (
 	"sync"
 	"time"
 
-	"github.com/wcgcyx/ethgen/idgen"
-	tk "github.com/wcgcyx/ethgen/tracker"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/sheerun/queue"
+	"github.com/wcgcyx/ethgen/idgen"
+	tk "github.com/wcgcyx/ethgen/tracker"
 )
 
 type Node struct {
 	ok bool
 
-	window      uint
-	tokenWeight uint
-	txWeight    uint
+	window uint
 
 	client *ethclient.Client
 
@@ -28,7 +26,7 @@ type Node struct {
 	lock         sync.RWMutex
 }
 
-func NewNode(window uint, ap string, erc20 []string, erc721 []string, tokenWeight uint, txWeight uint) (*Node, error) {
+func NewNode(window uint, ap string, erc20 []string, erc721 []string) (*Node, error) {
 	client, err := ethclient.Dial(ap)
 	if err != nil {
 		return nil, err
@@ -44,8 +42,6 @@ func NewNode(window uint, ap string, erc20 []string, erc721 []string, tokenWeigh
 	return &Node{
 		ok:           false,
 		window:       window,
-		tokenWeight:  tokenWeight,
-		txWeight:     txWeight,
 		client:       client,
 		tokenTracker: tokenTracker,
 		txTracker:    txTracker,
@@ -150,10 +146,10 @@ func (n *Node) Run() {
 	}
 }
 
-func (n *Node) GenerateQuery(number uint) ([]string, error) {
+func (n *Node) GenerateQuery(number uint, tokenWeight uint, txWeight uint) ([]string, error) {
 	n.lock.RLock()
 	defer n.lock.RUnlock()
-	number1 := number * n.tokenWeight / (n.tokenWeight + n.txWeight)
+	number1 := number * tokenWeight / (tokenWeight + txWeight)
 	number2 := number - number1
 	var res1 []string
 	var res2 []string

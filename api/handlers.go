@@ -12,6 +12,6 @@ func (h *apiHandler) Upcheck() bool {
 	return h.node.OK()
 }
 
-func (h *apiHandler) Generate(number uint) ([]string, error) {
-	return h.node.GenerateQuery(number)
+func (h *apiHandler) Generate(number uint, tokenWeight uint, txWeight uint) ([]string, error) {
+	return h.node.GenerateQuery(number, tokenWeight, txWeight)
 }

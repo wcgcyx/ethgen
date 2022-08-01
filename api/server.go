@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/wcgcyx/ethgen/node"
 	"github.com/filecoin-project/go-jsonrpc"
+	"github.com/wcgcyx/ethgen/node"
 )
 
 type Server struct {
