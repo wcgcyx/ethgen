@@ -69,6 +69,7 @@ func (a *Actor) start() {
 		if err != nil {
 			fmt.Printf("Fail to generate request: %v\n", err.Error())
 		} else {
+			req.Close = true
 			req.Header.Set("Content-Type", "application/json")
 			start := time.Now()
 			resp, err := a.client.Do(req)
@@ -77,6 +78,7 @@ func (a *Actor) start() {
 			} else {
 				// Add result
 				// TODO: Failed request?
+				resp.Body.Close()
 				a.result = append(a.result, time.Now().Sub(start))
 				if resp.StatusCode == 200 {
 					a.succeed++
