@@ -7,8 +7,8 @@ import (
 	"math/rand"
 	"strings"
 
-	"github.com/wcgcyx/ethgen/idgen"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/wcgcyx/ethgen/idgen"
 )
 
 type ERC20ApprovalTracker struct {
@@ -25,6 +25,8 @@ type ERC20ApprovalTracker struct {
 	// State of the account list
 	accountsAccessed []uint
 	accountsFlat     [][2]string
+	// Current block
+	blk uint64
 }
 
 func NewERC20ApprovalTracker(idGen idgen.IdGenerator, contractAddr string, maxBlocks uint) *ERC20ApprovalTracker {
@@ -70,6 +72,7 @@ func (t *ERC20ApprovalTracker) ApplyBlock(blk *types.Block) error {
 			}
 		}
 	}
+	t.blk = blk.NumberU64()
 	// Update method state
 	// Pop
 	pop1 := t.accessed[t.maxBlocks-1]
@@ -101,7 +104,7 @@ func (t *ERC20ApprovalTracker) GenerateQuery(number uint) ([]string, error) {
 	for i := uint(0); i < number; i++ {
 		index := rand.Intn(len(t.accountsFlat))
 		id := t.idGen.Next()
-		res[i] = fmt.Sprintf(`{"jsonrpc":"2.0","id":%d,"method":"eth_call","params":[{"to":"0x%v","data":"0x%v"}, "latest"]}`, id, t.contractAddr, "dd62ed3e"+"000000000000000000000000"+t.accountsFlat[index][0]+"000000000000000000000000"+t.accountsFlat[index][1])
+		res[i] = fmt.Sprintf(`{"jsonrpc":"2.0","id":%d,"method":"eth_call","params":[{"to":"0x%v","data":"0x%v"}, "0x%x"]}`, id, t.contractAddr, "dd62ed3e"+"000000000000000000000000"+t.accountsFlat[index][0]+"000000000000000000000000"+t.accountsFlat[index][1], t.blk)
 	}
 	return res, nil
 }

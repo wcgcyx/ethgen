@@ -7,8 +7,8 @@ import (
 	"math/rand"
 	"strings"
 
-	"github.com/wcgcyx/ethgen/idgen"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/wcgcyx/ethgen/idgen"
 )
 
 type ERC20BalanceTracker struct {
@@ -25,6 +25,8 @@ type ERC20BalanceTracker struct {
 	// State of the account list
 	accountsAccessed []uint
 	accountsFlat     []string
+	// Current block
+	blk uint64
 }
 
 func NewERC20BalanceTracker(idGen idgen.IdGenerator, contractAddr string, maxBlocks uint) *ERC20BalanceTracker {
@@ -77,6 +79,7 @@ func (t *ERC20BalanceTracker) ApplyBlock(blk *types.Block) error {
 			}
 		}
 	}
+	t.blk = blk.NumberU64()
 	// Update method state
 	// Pop
 	pop1 := t.accessed[t.maxBlocks-1]
@@ -108,7 +111,7 @@ func (t *ERC20BalanceTracker) GenerateQuery(number uint) ([]string, error) {
 	for i := uint(0); i < number; i++ {
 		index := rand.Intn(len(t.accountsFlat))
 		id := t.idGen.Next()
-		res[i] = fmt.Sprintf(`{"jsonrpc":"2.0","id":%d,"method":"eth_call","params":[{"to":"0x%v","data":"0x%v"}, "latest"]}`, id, t.contractAddr, "70a08231000000000000000000000000"+t.accountsFlat[index])
+		res[i] = fmt.Sprintf(`{"jsonrpc":"2.0","id":%d,"method":"eth_call","params":[{"to":"0x%v","data":"0x%v"}, "0x%x"]}`, id, t.contractAddr, "70a08231000000000000000000000000"+t.accountsFlat[index], t.blk)
 	}
 	return res, nil
 }

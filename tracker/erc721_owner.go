@@ -7,8 +7,8 @@ import (
 	"math/rand"
 	"strings"
 
-	"github.com/wcgcyx/ethgen/idgen"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/wcgcyx/ethgen/idgen"
 )
 
 type ERC721OwnerTracker struct {
@@ -25,6 +25,8 @@ type ERC721OwnerTracker struct {
 	// State of the nft list
 	nftAccessed []uint
 	nftsFlat    []string
+	// Current block
+	blk uint64
 }
 
 func NewERC721OwnerTracker(idGen idgen.IdGenerator, contractAddr string, maxBlocks uint) *ERC721OwnerTracker {
@@ -65,6 +67,7 @@ func (t *ERC721OwnerTracker) ApplyBlock(blk *types.Block) error {
 			}
 		}
 	}
+	t.blk = blk.NumberU64()
 	// Update method state
 	// Pop
 	pop1 := t.accessed[t.maxBlocks-1]
@@ -96,7 +99,7 @@ func (t *ERC721OwnerTracker) GenerateQuery(number uint) ([]string, error) {
 	for i := uint(0); i < number; i++ {
 		index := rand.Intn(len(t.nftsFlat))
 		id := t.idGen.Next()
-		res[i] = fmt.Sprintf(`{"jsonrpc":"2.0","id":%d,"method":"eth_call","params":[{"to":"0x%v","data":"0x%v"}, "latest"]}`, id, t.contractAddr, "6352211e"+t.nftsFlat[index])
+		res[i] = fmt.Sprintf(`{"jsonrpc":"2.0","id":%d,"method":"eth_call","params":[{"to":"0x%v","data":"0x%v"}, "0x%x"]}`, id, t.contractAddr, "6352211e"+t.nftsFlat[index], t.blk)
 	}
 	return res, nil
 }
