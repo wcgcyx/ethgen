@@ -14,3 +14,7 @@ To generate 250 queries every 1 second:
 ```
 ./build/ethgen generate --number=250 --duration=1s
 ```
+To test performance at rate 250/sec:
+```
+./build/ethgen request --number=250 --duration=1s
+```
