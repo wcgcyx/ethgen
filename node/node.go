@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"math/big"
+	"math/rand"
 	"sync"
 	"time"
 
@@ -130,6 +131,8 @@ func (n *Node) Run() {
 		item := blkQueue.Pop()
 		blk := item.(*types.Block)
 		n.lock.Lock()
+		// Configure random source
+		rand.Seed(int64(blk.NumberU64()))
 		err := n.tokenTracker.ApplyBlock(blk)
 		if err != nil {
 			fmt.Printf("Warn: fail to apply block at token tracker: %v\n", err.Error())
