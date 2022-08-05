@@ -119,7 +119,7 @@ func report(start time.Time, end time.Time, actors []*Actor) {
 				variance += (res - avg) * (res - avg)
 			}
 		}
-		std := time.Duration(int64(math.Sqrt(float64(variance) / float64(count-1))))
+		std := time.Duration(int64(math.Sqrt(float64(variance) / float64(count))))
 		fmt.Printf("Performance result at %v: max %v, min %v, avg %v, std %v, time taken %v, succeed/total: %v/%v\n", time.Now(), max, min, avg, std, end.Sub(start), succeed, count)
 	}
 }
