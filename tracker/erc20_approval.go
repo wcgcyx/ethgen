@@ -104,7 +104,7 @@ func (t *ERC20ApprovalTracker) GenerateQuery(number uint) ([]string, error) {
 	for i := uint(0); i < number; i++ {
 		index := rand.Intn(len(t.accountsFlat))
 		id := t.idGen.Next()
-		res[i] = fmt.Sprintf(`{"jsonrpc":"2.0","id":%d,"method":"eth_call","params":[{"to":"0x%v","data":"0x%v"}, "0x%x"]}`, id, t.contractAddr, "dd62ed3e"+"000000000000000000000000"+t.accountsFlat[index][0]+"000000000000000000000000"+t.accountsFlat[index][1], t.blk)
+		res[i] = fmt.Sprintf(`{"jsonrpc":"2.0","id":%d,"method":"eth_call","params":[{"to":"0x%v","data":"0x%v"}, "0x%x"]}`, id, t.contractAddr, "dd62ed3e"+"000000000000000000000000"+t.accountsFlat[index][0]+"000000000000000000000000"+t.accountsFlat[index][1], t.blk-1)
 	}
 	return res, nil
 }

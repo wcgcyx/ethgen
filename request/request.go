@@ -109,8 +109,17 @@ func report(start time.Time, end time.Time, actors []*Actor) {
 		succeed += actor.succeed
 	}
 	if count == 0 {
-		fmt.Printf("Performance result at %v: max %v, min %v, avg NA, time taken %v, succeed/total: %v/%v\n", time.Now(), max, min, end.Sub(start), succeed, count)
+		fmt.Printf("Performance result at %v: max %v, min %v, avg NA, std NA, time taken %v, succeed/total: %v/%v\n", time.Now(), max, min, end.Sub(start), succeed, count)
 	} else {
-		fmt.Printf("Performance result at %v: max %v, min %v, avg %v, time taken %v, succeed/total: %v/%v\n", time.Now(), max, min, total/time.Duration(count), end.Sub(start), succeed, count)
+		// Calculate variance
+		variance := time.Duration(0)
+		avg := total / time.Duration(count)
+		for _, actor := range actors {
+			for _, res := range actor.result {
+				variance += (res - avg) * (res - avg)
+			}
+		}
+		std := time.Duration(int64(math.Sqrt(float64(variance) / float64(count))))
+		fmt.Printf("Performance result at %v: max %v, min %v, avg %v, std %v, time taken %v, succeed/total: %v/%v\n", time.Now(), max, min, avg, std, end.Sub(start), succeed, count)
 	}
 }
