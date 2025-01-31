@@ -122,10 +122,10 @@ func (n *Node) ApplyBlock(blk *types.Block) {
 		}
 		if txn.To() == nil {
 			transactionsToAdd = append(transactionsToAdd,
-				fmt.Sprintf(`[{"from":"%v","data":"0x%v"},"0x%x"]}`, fromAddr.String(), hex.EncodeToString(txn.Data()), blk.NumberU64()-1))
+				fmt.Sprintf(`[{"from":"%v","data":"0x%v"},"0x%x"]`, fromAddr.String(), hex.EncodeToString(txn.Data()), blk.NumberU64()-1))
 		} else {
 			transactionsToAdd = append(transactionsToAdd,
-				fmt.Sprintf(`[{"to":"%v","from":"%v","data":"0x%v"},"0x%x"]}`, txn.To().String(), fromAddr.String(), hex.EncodeToString(txn.Data()), blk.NumberU64()-1))
+				fmt.Sprintf(`[{"to":"%v","from":"%v","data":"0x%v"},"0x%x"]`, txn.To().String(), fromAddr.String(), hex.EncodeToString(txn.Data()), blk.NumberU64()-1))
 		}
 		gasUsed = append(gasUsed, receipts[i].GasUsed)
 	}
