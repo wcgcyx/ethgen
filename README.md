@@ -6,15 +6,17 @@ A tool to generate realistic near-head read only eth_call queries.
 make build
 
 # Run
-First run a daemon to follow the chain and build a adaptive dataset.
 ```
-./build/ethgen daemon --config=./contracts.json --chain_ap=http://127.0.0.1:8545
+ ./build/ethgen start --window=64 --concurrency=5 --frequency=5ms --chain_ap=http://localhost:8545
 ```
-To generate 250 queries every 1 second:
+You will also potentially need to do the following to release port faster:
 ```
-./build/ethgen generate --number=250 --duration=1s
-```
-To test performance at rate 250/sec:
-```
-./build/ethgen request --number=250 --duration=1s
+sudo sysctl -w net.inet.ip.portrange.first=20000
+sudo sysctl -w net.inet.ip.portrange.last=65535
+
+sudo sysctl -w kern.maxfiles=1048576
+sudo sysctl -w kern.maxfilesperproc=1048576
+sudo sysctl -w kern.ipc.somaxconn=2048
+
+sudo sysctl -w net.inet.tcp.msl=100
 ```
