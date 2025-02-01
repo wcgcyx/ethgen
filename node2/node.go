@@ -209,6 +209,7 @@ func (n *Node) StartBenchmark(number uint, concurrency uint, delay time.Duration
 		}(i)
 	}
 
+	sample := 0
 	for {
 		// Report gas rate per second
 		time.Sleep(5 * time.Second)
@@ -223,6 +224,7 @@ func (n *Node) StartBenchmark(number uint, concurrency uint, delay time.Duration
 			actorLocks[i].Unlock()
 		}
 		gasRate := float64(totalGas) / 1e6 / totalTime.Seconds()
-		fmt.Printf("Gas speed: %.2f M/s\n", gasRate)
+		fmt.Printf("Sample - %v - Gas speed: %.2f M/s\n", sample, gasRate)
+		sample++
 	}
 }
