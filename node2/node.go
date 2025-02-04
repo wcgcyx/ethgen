@@ -170,6 +170,7 @@ func (n *Node) GenerateQuery(number uint) ([]string, []uint64, error) {
 func (n *Node) StartBenchmark(number uint, concurrency uint, delay time.Duration) error {
 	fmt.Println("Start benchmark...")
 	actorLocks := make([]sync.RWMutex, concurrency)
+	actorReqs := make([]uint64, concurrency)
 	actorGases := make([]uint64, concurrency)
 	actorTime := make([]time.Duration, concurrency)
 
@@ -197,6 +198,7 @@ func (n *Node) StartBenchmark(number uint, concurrency uint, delay time.Duration
 						resp.Body.Close()
 						actorLocks[index].Lock()
 						actorGases[index] += gases[i]
+						actorReqs[index]++
 						actorTime[index] += taken
 						actorLocks[index].Unlock()
 						if resp.StatusCode != 200 {
@@ -215,16 +217,20 @@ func (n *Node) StartBenchmark(number uint, concurrency uint, delay time.Duration
 		time.Sleep(5 * time.Second)
 		totalTime := time.Duration(0)
 		totalGas := uint64(0)
+		totalReq := uint64(0)
 		for i := 0; i < int(concurrency); i++ {
 			actorLocks[i].Lock()
 			totalTime += actorTime[i]
 			totalGas += actorGases[i]
+			totalReq += actorReqs[i]
 			actorTime[i] = time.Duration(0)
 			actorGases[i] = 0
+			actorReqs[i] = 0
 			actorLocks[i].Unlock()
 		}
 		gasRate := float64(totalGas) / 1e6 / totalTime.Seconds()
-		fmt.Printf("Sample - %v - Gas speed: %.2f M/s\n", sample, gasRate)
+		reqRate := float64(totalReq) / totalTime.Seconds()
+		fmt.Printf("Sample - %v - Gas speed: %.2f M/s, %.2f Req/s\n", sample, gasRate, reqRate)
 		sample++
 	}
 }
